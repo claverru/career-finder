@@ -1,0 +1,59 @@
+version: 2
+profile_id: your-profile-id
+
+sources:
+  candidate_facts_file: /workspaces/job/career/profile/cv_plain.txt
+  rendered_cv_file: /workspaces/job/career/profile/render/main.tex
+  review_queue_file: /workspaces/job/career/state/memory_review.jsonl
+
+preferences:
+  confirmed:
+    search:
+      remote_policy:
+        mode: null
+        notes: []
+        reject: []
+      geography:
+        base: null
+        hireable_from: []
+        require_explicit_spain_hiring: null
+        allow_eor_or_local_entity: null
+      contract:
+        allowed: null
+        reject: []
+      role_scope:
+        require_model_development: null
+        require_production_ownership: null
+      consulting:
+        preferred_risk: null
+        allowed_risk: []
+        ask_before_relaxing: true
+      domains:
+        preferred: []
+      company_preferences:
+        preferred: []
+        blocked_confirmed: []
+      compensation:
+        salary_expectation_eur_base: null
+        ask_before_filtering_on_compensation: true
+    cv:
+      emphasize: []
+      guardrails:
+        - Do not invent experience.
+        - Keep claims grounded in the canonical candidate facts and evidence bank.
+  notes:
+    - Candidate facts live in cv_plain.txt; this YAML only stores structured preferences and memory.
+    - High-impact search preferences intentionally start as null or empty. Ask once when a task depends on them, then persist the answer.
+
+memory:
+  confirmed:
+    companies:
+      preferred: []
+      blocked: []
+    domains:
+      preferred: []
+      blocked: []
+    locations:
+      preferred: []
+      blocked: []
+  review_queue_file: /workspaces/job/career/state/memory_review.jsonl

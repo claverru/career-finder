@@ -1,0 +1,7 @@
+interface:
+  display_name: "Job Search Runbook"
+  short_description: "Run the candidate job-search workflow."
+  default_prompt: "Use $job-search-runbook to search for ML roles using the canonical candidate facts in career/profile/cv_plain.txt plus confirmed preferences in career/profile/profile.yaml, verify direct apply links, and rebuild the structured search ledgers from the Markdown batches when needed."
+
+policy:
+  allow_implicit_invocation: true

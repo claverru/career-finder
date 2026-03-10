@@ -1,0 +1,7 @@
+interface:
+  display_name: "CV Optimize"
+  short_description: "Tailor and regenerate the candidate resume."
+  default_prompt: "Use $cv-optimize to review the canonical candidate profile in career/profile/cv_plain.txt, use career/profile/profile.yaml only for preferences and memory, and regenerate the LaTeX artifact without inventing facts."
+
+policy:
+  allow_implicit_invocation: true

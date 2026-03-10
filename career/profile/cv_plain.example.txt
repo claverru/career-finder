@@ -1,0 +1,60 @@
+Candidate Name
+
+Base: City, Country
+Email: candidate@example.com
+Mobile: +00 000 000 000
+LinkedIn: https://www.linkedin.com/in/your-handle
+GitHub: https://github.com/your-handle
+Kaggle: https://www.kaggle.com/your-handle
+Toptal: https://www.toptal.com/resume/your-name
+
+Canonical narrative profile for candidate facts and reusable evidence.
+Structured preferences and memory live in career/profile/profile.yaml.
+
+HEADLINE
+Machine Learning Engineer with X years building and deploying production ML systems.
+
+SUMMARY
+- Replace this with a concise positioning summary.
+- Keep every claim grounded in real evidence.
+
+CAREER FOCUS
+Target roles: Staff Machine Learning Engineer, Senior Machine Learning Engineer
+Strengths: model development, production deployment, MLOps
+
+SKILLS
+ml_dl: Deep Learning, NLP, Computer Vision
+mlops_prod: MLflow, Docker, CI/CD, Monitoring
+data: SQL, Spark
+cloud: AWS, GCP
+languages_frameworks: Python, PyTorch, TensorFlow
+
+EXPERIENCE
+Example Company (Industry) — City / Remote
+Machine Learning Engineer — 2024-01 to Present
+Tags: leadership, PyTorch
+- Replace this with factual bullets only.
+- Keep bullets specific and evidence-backed.
+
+EDUCATION
+Example Degree — Example University (2020 to 2022)
+- City, Country
+- Details: Example topic, Example topic
+
+PROJECTS
+Example Project — Portfolio Project | 2024
+- Replace this with a real project summary.
+- Link: https://example.com/project
+
+EVIDENCE BANK
+production_ml:
+- Replace with concise, reusable evidence tied to real work.
+
+leadership:
+- Replace with confirmed leadership evidence.
+
+business_impact:
+- Replace with measured impact when available.
+
+technical_depth:
+- Replace with evidence of deep technical work.

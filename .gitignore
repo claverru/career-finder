@@ -1,0 +1,32 @@
+# Candidate-local data
+/career/profile/cv_plain.txt
+/career/profile/profile.yaml
+/career/profile/render/main.tex
+/career/profile/render/main.pdf
+/career/search/batches/[0-9]*.md
+/career/search/state/*.jsonl
+/career/state/*.jsonl
+
+# Local Python state
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.pytest_cache/
+
+# Local environments and secrets
+.env
+.env.*
+.venv/
+venv/
+
+# Local editor and OS files
+.DS_Store
+.vscode/
+
+# LaTeX build artifacts
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
