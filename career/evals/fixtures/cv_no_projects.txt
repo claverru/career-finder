@@ -1,0 +1,33 @@
+Candidate Name
+
+Base: Madrid, Spain
+Email: candidate@example.com
+LinkedIn: https://www.linkedin.com/in/example
+
+Canonical narrative profile for candidate facts and reusable evidence.
+Structured preferences and memory live in career/profile/profile.yaml.
+
+HEADLINE
+Machine Learning Engineer focused on production systems.
+
+SUMMARY
+- Built and shipped ML systems in production.
+
+CAREER FOCUS
+Target roles: Senior Machine Learning Engineer, Staff Machine Learning Engineer
+Strengths: recommender systems, NLP, model deployment
+
+SKILLS
+ml_dl: NLP, Recommender Systems, Deep Learning
+mlops_prod: CI/CD, Monitoring, Model Serving
+
+EXPERIENCE
+Example Company (AdTech) — Remote / Spain
+Machine Learning Engineer — 2022-01 to Present
+Tags: PyTorch, MLOps
+- Built and deployed ranking models.
+
+EDUCATION
+Example Degree — Example University (2018 to 2020)
+- Madrid, Spain
+- Details: Machine Learning, Distributed Systems

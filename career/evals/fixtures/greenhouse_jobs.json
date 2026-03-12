@@ -1,0 +1,14 @@
+{
+  "jobs": [
+    {
+      "id": 12345,
+      "title": "Senior Machine Learning Engineer",
+      "updated_at": "2026-03-11T10:00:00Z",
+      "absolute_url": "https://job-boards.greenhouse.io/examplecompany/jobs/12345",
+      "location": {
+        "name": "Spain"
+      },
+      "content": "<p>Remote from Spain.</p><p>Full-time employee role.</p><p>Train and deploy recommender models in production.</p><p>Salary: EUR 90,000 - EUR 110,000.</p>"
+    }
+  ]
+}

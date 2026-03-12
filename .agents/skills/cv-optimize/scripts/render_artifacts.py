@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 import re
+import sys
 
 
 CAREER_ROOT = Path(__file__).resolve().parents[4] / "career"
@@ -242,20 +244,16 @@ def parse_projects(lines: list[str]) -> list[dict]:
 def parse_cv_source(path: Path) -> dict:
     name, contacts, sections = split_sections(load_lines(path))
 
-    required = ["HEADLINE", "SUMMARY", "SKILLS", "EXPERIENCE", "EDUCATION", "PROJECTS"]
-    missing = [section for section in required if section not in sections]
-    if missing:
-        raise ValueError(f"cv_plain.txt is missing sections: {', '.join(missing)}")
-
     return {
         "name": name,
         "contacts": contacts,
-        "headline": parse_headline(sections["HEADLINE"]),
-        "summary": parse_summary(sections["SUMMARY"]),
-        "skills": parse_skills(sections["SKILLS"]),
-        "experience": parse_experience(sections["EXPERIENCE"]),
-        "education": parse_education(sections["EDUCATION"]),
-        "projects": parse_projects(sections["PROJECTS"]),
+        "headline": parse_headline(sections["HEADLINE"]) if "HEADLINE" in sections else "",
+        "summary": parse_summary(sections.get("SUMMARY", [])),
+        "career_focus": clean_lines(sections.get("CAREER FOCUS", [])),
+        "skills": parse_skills(sections.get("SKILLS", [])),
+        "experience": parse_experience(sections.get("EXPERIENCE", [])),
+        "education": parse_education(sections.get("EDUCATION", [])),
+        "projects": parse_projects(sections.get("PROJECTS", [])),
     }
 
 
@@ -276,57 +274,137 @@ def render_latex(profile: dict) -> str:
     lines.append(r"\begin{document}")
     lines.append(r"\begin{center}")
     lines.append(r"{\LARGE \textbf{" + tex_escape(profile["name"]) + r"}}\\[4pt]")
-    lines.append(tex_escape(contacts.get("base", "")) + r"\\")
-    lines.append(r"\href{mailto:" + contacts.get("email", "") + "}{" + tex_escape(contacts.get("email", "")) + r"} \quad")
-    lines.append(tex_escape(contacts.get("mobile", "")) + r"\\")
-    lines.append(r"\href{" + contacts.get("linkedin", "") + r"}{LinkedIn} \quad")
-    lines.append(r"\href{" + contacts.get("github", "") + r"}{GitHub} \quad")
-    lines.append(r"\href{" + contacts.get("kaggle", "") + r"}{Kaggle} \quad")
-    lines.append(r"\href{" + contacts.get("toptal", "") + r"}{Toptal}")
+    if contacts.get("base"):
+        lines.append(tex_escape(contacts["base"]) + r"\\")
+
+    primary_contact_bits: list[str] = []
+    if contacts.get("email"):
+        primary_contact_bits.append(
+            r"\href{mailto:" + contacts["email"] + "}{" + tex_escape(contacts["email"]) + r"}"
+        )
+    if contacts.get("mobile"):
+        primary_contact_bits.append(tex_escape(contacts["mobile"]))
+    if primary_contact_bits:
+        lines.append(r" \quad ".join(primary_contact_bits) + r"\\")
+
+    social_bits: list[str] = []
+    if contacts.get("linkedin"):
+        social_bits.append(r"\href{" + contacts["linkedin"] + r"}{LinkedIn}")
+    if contacts.get("github"):
+        social_bits.append(r"\href{" + contacts["github"] + r"}{GitHub}")
+    if contacts.get("kaggle"):
+        social_bits.append(r"\href{" + contacts["kaggle"] + r"}{Kaggle}")
+    if contacts.get("toptal"):
+        social_bits.append(r"\href{" + contacts["toptal"] + r"}{Toptal}")
+    if social_bits:
+        lines.append(r" \quad ".join(social_bits))
     lines.append(r"\end{center}")
-    lines.append(r"\section*{Headline}")
-    lines.append(tex_escape(profile["headline"]))
-    lines.append(r"\section*{Summary}")
-    lines.append(r"\begin{itemize}")
-    for item in profile["summary"]:
-        lines.append(r"\item " + tex_escape(item))
-    lines.append(r"\end{itemize}")
-    lines.append(r"\section*{Skills}")
-    for group, values in profile["skills"].items():
-        lines.append(r"\textbf{" + tex_escape(group) + "}: " + tex_escape(", ".join(values)) + r"\\")
-    lines.append(r"\section*{Experience}")
-    for company in profile["experience"]:
-        lines.append(r"\subsection*{" + tex_escape(company["company"]) + r" \hfill " + tex_escape(company["location"]) + "}")
-        lines.append(r"\textit{" + tex_escape(company["industry"]) + r"}\\")
-        for role in company["roles"]:
-            lines.append(r"\textbf{" + tex_escape(role["title"]) + r"} \hfill " + tex_escape(role["start"]) + " -- " + tex_escape(role["end"]) + r"\\")
-            lines.append(r"\textit{" + tex_escape(", ".join(role["tags"])) + "}")
-            lines.append(r"\begin{itemize}")
-            for bullet in role["bullets"]:
-                lines.append(r"\item " + tex_escape(bullet))
-            lines.append(r"\end{itemize}")
-    lines.append(r"\section*{Education}")
-    for entry in profile["education"]:
-        lines.append(r"\textbf{" + tex_escape(entry["degree"]) + r"} \hfill " + tex_escape(entry["start"]) + " -- " + tex_escape(entry["end"]) + r"\\")
-        lines.append(tex_escape(entry["institution"]) + ", " + tex_escape(entry["location"]) + r"\\")
-        lines.append(r"\textit{" + tex_escape(", ".join(entry["details"])) + r"}\\")
-    lines.append(r"\section*{Projects}")
-    for project in profile["projects"]:
-        lines.append(r"\textbf{" + tex_escape(project["name"]) + "} (" + tex_escape(project["label"]) + r")\\")
+
+    if profile["headline"]:
+        lines.append(r"\section*{Headline}")
+        lines.append(tex_escape(profile["headline"]))
+
+    if profile["summary"]:
+        lines.append(r"\section*{Summary}")
         lines.append(r"\begin{itemize}")
-        for bullet in project["bullets"]:
-            lines.append(r"\item " + tex_escape(bullet))
-        for link in project["links"]:
-            lines.append(r"\item \href{" + link + "}{" + tex_escape(link) + "}")
+        for item in profile["summary"]:
+            lines.append(r"\item " + tex_escape(item))
         lines.append(r"\end{itemize}")
+
+    if profile["career_focus"]:
+        lines.append(r"\section*{Career Focus}")
+        lines.append(r"\begin{itemize}")
+        for item in profile["career_focus"]:
+            lines.append(r"\item " + tex_escape(item))
+        lines.append(r"\end{itemize}")
+
+    if profile["skills"]:
+        lines.append(r"\section*{Skills}")
+        for group, values in profile["skills"].items():
+            lines.append(r"\textbf{" + tex_escape(group) + "}: " + tex_escape(", ".join(values)) + r"\\")
+
+    if profile["experience"]:
+        lines.append(r"\section*{Experience}")
+        for company in profile["experience"]:
+            lines.append(
+                r"\subsection*{"
+                + tex_escape(company["company"])
+                + r" \hfill "
+                + tex_escape(company["location"])
+                + "}"
+            )
+            lines.append(r"\textit{" + tex_escape(company["industry"]) + r"}\\")
+            for role in company["roles"]:
+                lines.append(
+                    r"\textbf{"
+                    + tex_escape(role["title"])
+                    + r"} \hfill "
+                    + tex_escape(role["start"])
+                    + " -- "
+                    + tex_escape(role["end"])
+                    + r"\\"
+                )
+                if role["tags"]:
+                    lines.append(r"\textit{" + tex_escape(", ".join(role["tags"])) + "}")
+                if role["bullets"]:
+                    lines.append(r"\begin{itemize}")
+                    for bullet in role["bullets"]:
+                        lines.append(r"\item " + tex_escape(bullet))
+                    lines.append(r"\end{itemize}")
+
+    if profile["education"]:
+        lines.append(r"\section*{Education}")
+        for entry in profile["education"]:
+            lines.append(
+                r"\textbf{"
+                + tex_escape(entry["degree"])
+                + r"} \hfill "
+                + tex_escape(entry["start"])
+                + " -- "
+                + tex_escape(entry["end"])
+                + r"\\"
+            )
+            location_text = tex_escape(entry["location"]) if entry["location"] else ""
+            institution_line = tex_escape(entry["institution"])
+            if location_text:
+                institution_line += ", " + location_text
+            lines.append(institution_line + r"\\")
+            if entry["details"]:
+                lines.append(r"\textit{" + tex_escape(", ".join(entry["details"])) + r"}\\")
+
+    if profile["projects"]:
+        lines.append(r"\section*{Projects}")
+        for project in profile["projects"]:
+            lines.append(r"\textbf{" + tex_escape(project["name"]) + "} (" + tex_escape(project["label"]) + r")\\")
+            lines.append(r"\begin{itemize}")
+            for bullet in project["bullets"]:
+                lines.append(r"\item " + tex_escape(bullet))
+            for link in project["links"]:
+                lines.append(r"\item \href{" + link + "}{" + tex_escape(link) + "}")
+            lines.append(r"\end{itemize}")
+
     lines.append(r"\end{document}")
     return "\n".join(lines) + "\n"
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Render LaTeX resume artifacts from the canonical cv_plain.txt.")
+    parser.add_argument("--source", default=str(CV_SOURCE_PATH), help="Path to the canonical cv_plain.txt file.")
+    parser.add_argument("--output", default=str(LATEX_PATH), help="Path to the generated LaTeX file.")
+    return parser.parse_args()
+
+
 def main() -> None:
-    profile = parse_cv_source(CV_SOURCE_PATH)
-    LATEX_PATH.parent.mkdir(parents=True, exist_ok=True)
-    LATEX_PATH.write_text(render_latex(profile), encoding="utf-8")
+    try:
+        args = parse_args()
+        source_path = Path(args.source).resolve()
+        output_path = Path(args.output).resolve()
+        profile = parse_cv_source(source_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(render_latex(profile), encoding="utf-8")
+    except (FileNotFoundError, ValueError) as error:
+        print(f"error: {error}", file=sys.stderr)
+        raise SystemExit(2)
 
 
 if __name__ == "__main__":

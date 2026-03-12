@@ -1,0 +1,20 @@
+sources:
+  - source_kind: greenhouse
+    label: Example Greenhouse board
+    company: Example Company
+    board_token: examplecompany
+
+  - source_kind: lever
+    label: Example Lever board
+    company: Example Company
+    site: examplecompany
+
+  - source_kind: ashby_public
+    label: Example Ashby board
+    company: Example Company
+    board_name: examplecompany
+
+  - source_kind: company_html
+    label: Example careers page
+    company: Example Company
+    careers_url: https://example.com/careers

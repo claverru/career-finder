@@ -1,8 +1,10 @@
 # Candidate-local data
 /career/profile/cv_plain.txt
+/career/profile/imported_resume.txt
 /career/profile/profile.yaml
 /career/profile/render/main.tex
 /career/profile/render/main.pdf
+/career/search/policy/source_catalog.yaml
 /career/search/batches/[0-9]*.md
 /career/search/state/*.jsonl
 /career/state/*.jsonl

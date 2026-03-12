@@ -10,6 +10,7 @@ Toptal: https://www.toptal.com/resume/your-name
 
 Canonical narrative profile for candidate facts and reusable evidence.
 Structured preferences and memory live in career/profile/profile.yaml.
+Sections such as CAREER FOCUS, PROJECTS, and EVIDENCE BANK are optional and should be omitted entirely when absent.
 
 HEADLINE
 Machine Learning Engineer with X years building and deploying production ML systems.

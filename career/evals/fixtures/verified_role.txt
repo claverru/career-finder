@@ -1,0 +1,5 @@
+Remote from Spain.
+Full-time employee role.
+Train and deploy recommender models in production.
+Own monitoring and CI/CD for deployed ML services.
+Salary: EUR 90,000 - EUR 110,000.

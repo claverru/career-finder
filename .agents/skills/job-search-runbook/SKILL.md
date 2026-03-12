@@ -5,41 +5,28 @@ description: Discover, verify, and track job opportunities using the canonical c
 
 # Job Search Runbook
 
+Use this skill for role discovery, verification, ranking, ledgers, and reviewable memory.
+
 ## Workflow
 
-1. Read `/workspaces/job/career/profile/cv_plain.txt`.
-2. Read `/workspaces/job/career/profile/profile.yaml`.
-3. If those local files are missing in a clean clone, seed them from `/workspaces/job/career/profile/cv_plain.example.txt` and `/workspaces/job/career/profile/profile.example.yaml`.
-4. Read `/workspaces/job/career/search/policy/workflow.md`.
-5. Read `/workspaces/job/career/search/state/jobs.jsonl`, `/workspaces/job/career/search/state/applications.jsonl`, and `/workspaces/job/career/state/memory_review.jsonl`.
-6. Build filters and ranking from confirmed preferences only.
-7. If a high-impact preference is missing, ask once and persist it. Use `/workspaces/job/.agents/skills/cv-optimize/scripts/set_preference.py` when the answer becomes confirmed profile data.
-8. Keep ambiguous historical notes in the review queue.
-9. Persist both human-readable Markdown batches and structured JSONL records.
+1. Read `/workspaces/job/career/AGENTS.md` and `/workspaces/job/career/search/policy/workflow.md`.
+2. Load `cv_plain.txt`, `profile.yaml`, `search/state/jobs.jsonl`, `search/state/applications.jsonl`, and `state/memory_review.jsonl`.
+3. Run `scripts/build_search_brief.py`. If blocking questions remain, ask only those and persist confirmed answers with `/workspaces/job/.agents/skills/cv-optimize/scripts/set_preference.py`.
+4. Derive the plan with `scripts/plan_search_run.py`.
+5. Prefer `scripts/run_search_pipeline.py` for normal runs. Use `scripts/run_source_discovery.py` and `scripts/verify_and_rank.py` only for partial reruns or debugging.
+6. Always capture a salary band. Use the posting salary when present; otherwise infer a band from external public sources and label it `Inferred` with evidence and confidence.
+7. For remote-only filtering, accept strong flexibility signals such as `flexible workplace` or country-level remote location wording; reject only clear hybrid, onsite, or office-bound roles.
+8. Treat model development as the hard scope requirement. Production ownership is optional unless confirmed as required in `profile.yaml`. Reject pure MLOps or platform roles with no model-development evidence.
+9. Keep aggregators discovery-only, keep unconfirmed memory out of hard filters, and never create duplicate `dedupe_key` records.
+10. If Markdown batches change, rebuild structured state with `scripts/sync_search_state.py`.
 
-## Guardrails
+## Read only if needed
 
-- Never keep an aggregator URL as the final apply link.
-- Never use unconfirmed memory as a definitive reject rule.
-- Never present inferred salary as explicit.
-- Never create a duplicate canonical job record for the same `dedupe_key`.
-
-## Repo resources
-
-- Search workflow reference: `references/search-workflow.md`
-- Search state schema: `references/search-state.md`
-- Confirmed preference writer: `/workspaces/job/.agents/skills/cv-optimize/scripts/set_preference.py`
-- Ledger rebuild script: `scripts/sync_search_state.py`
-
-## Typical tasks
-
-- Search for new roles using confirmed preferences.
-- Verify remote, Spain hiring, contract, and production-ML scope.
-- Capture salary evidence and label it correctly.
-- Update the job ledger and application ledger.
-- Import old narrative batches and extract reviewable memory.
+- `references/search-state.md` for ledger field intent
+- `references/source-adapters.md` for supported source kinds
 
 ## Validation
 
-- Run `python scripts/sync_search_state.py` when Markdown batches change or the ledgers need to be rebuilt from source files.
-- Review `memory_review.jsonl` before promoting any candidate preference into confirmed memory.
+- `python scripts/build_search_brief.py`
+- `python scripts/run_search_pipeline.py --source-catalog /workspaces/job/career/search/policy/source_catalog.yaml`
+- `python scripts/sync_search_state.py`

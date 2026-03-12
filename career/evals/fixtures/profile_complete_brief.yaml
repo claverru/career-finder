@@ -1,0 +1,45 @@
+preferences:
+  confirmed:
+    search:
+      remote_policy:
+        mode: remote_only
+        notes:
+          - Remote from Spain only.
+        reject:
+          - hybrid_mandatory
+          - onsite_mandatory
+      geography:
+        base: Madrid, Spain
+        hireable_from:
+          - Spain
+        require_explicit_spain_hiring: true
+        allow_eor_or_local_entity: true
+      contract:
+        allowed:
+          - full_time
+          - full_time_employee
+        reject:
+          - contractor
+          - freelance
+      role_scope:
+        require_model_development: true
+        require_production_ownership: true
+      domains:
+        preferred:
+          - recommender systems
+          - NLP
+      company_preferences:
+        preferred:
+          - Example Company
+        blocked_confirmed: []
+      discovery:
+        source_priority:
+          - greenhouse
+          - lever
+          - ashby_public
+          - company_html
+          - linkedin_public
+          - web_search
+      compensation:
+        salary_expectation_eur_base: 90000
+        ask_before_filtering_on_compensation: true

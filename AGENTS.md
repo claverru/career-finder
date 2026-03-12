@@ -1,17 +1,17 @@
 # Repository Instructions
 
-This repository has one active domain:
+Active domain: `career/`.
 
-- `career/`: candidate profile data, resume artifacts, job-search workflow, and Codex skills.
-
-For work under `career/`, always read `/workspaces/job/career/AGENTS.md` first.
+For work under `career/`, read `/workspaces/job/career/AGENTS.md` first.
 
 Global rules:
 
-- Treat `/workspaces/job/career/profile/cv_plain.txt` as the canonical local source of truth for candidate facts, resume content, and reusable evidence.
-- Treat `/workspaces/job/career/profile/profile.yaml` as the canonical local source of truth for confirmed preferences and confirmed memory.
-- If those local files are missing in a clean clone, seed them from `/workspaces/job/career/profile/cv_plain.example.txt` and `/workspaces/job/career/profile/profile.example.yaml`.
+- Candidate facts and reusable evidence live in `/workspaces/job/career/profile/cv_plain.txt`.
+- Confirmed preferences and confirmed memory live in `/workspaces/job/career/profile/profile.yaml`.
+- If either local file is missing, seed it from the matching `.example` file.
+- If the user provides an external resume and `cv_plain.txt` is missing or stale, import it before deeper CV work.
 - Never invent achievements, dates, technologies, salary expectations, or user preferences.
-- If a decision depends on a missing high-impact preference, ask once, then persist the answer in the canonical store.
-- Use confirmed memory as a filter or ranking signal. Keep ambiguous historical notes in the review queue until they are confirmed.
-- Prefer the repo-local skills under `/workspaces/job/.agents/skills/` over ad hoc prompts when the task matches them.
+- If a missing high-impact preference blocks a decision, ask once and persist the answer.
+- For serious search work, use the staged flow: brief, plan, official/public discovery, verification, ranking, persistence.
+- Use confirmed memory as a filter or ranking signal; keep ambiguous notes in the review queue.
+- Prefer repo-local skills under `/workspaces/job/.agents/skills/` over ad hoc prompts when the task matches them.

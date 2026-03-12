@@ -24,3 +24,7 @@
 
 - Input: a role already present in `jobs.jsonl`.
 - Expected: the new run does not create a second canonical job entry with the same `dedupe_key`.
+
+## Executable fixtures
+
+- Run `python /workspaces/job/career/evals/run_v2_evals.py` to cover search-brief generation, query planning, source normalization, verification evidence extraction, and search-run reuse.

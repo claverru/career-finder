@@ -1,7 +1,7 @@
 {
   "name": "Python Dev",
   "image": "mcr.microsoft.com/devcontainers/python:1-3.12-bullseye",
-  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y python3-yaml texlive-latex-extra texlive-fonts-recommended texlive-lang-spanish latexmk && sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*",
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y python3-yaml texlive-latex-extra texlive-fonts-recommended texlive-lang-spanish latexmk poppler-utils tesseract-ocr && sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/*",
   "customizations": {
     "vscode": {
       "extensions": [

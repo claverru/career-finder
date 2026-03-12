@@ -24,3 +24,7 @@
 
 - Input: the user confirms a missing preference such as salary expectation or a blocked company.
 - Expected: `set_preference.py` updates the canonical YAML at an existing confirmed-preference or confirmed-memory path without duplicating candidate facts into `profile.yaml`.
+
+## Executable fixtures
+
+- Run `python /workspaces/job/career/evals/run_v2_evals.py` to cover optional resume sections and import-review confidence behavior.

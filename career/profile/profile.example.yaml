@@ -33,6 +33,14 @@ preferences:
       company_preferences:
         preferred: []
         blocked_confirmed: []
+      discovery:
+        source_priority:
+          - greenhouse
+          - lever
+          - ashby_public
+          - company_html
+          - linkedin_public
+          - web_search
       compensation:
         salary_expectation_eur_base: null
         ask_before_filtering_on_compensation: true

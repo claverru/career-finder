@@ -35,6 +35,13 @@ FIELD_MAP = {
     "salary evidence": "salary_evidence",
     "consulting risk": "consulting_risk",
     "direct company apply link": "final_company_apply_url",
+    "source kind": "source_kind",
+    "source record id": "source_record_id",
+    "evidence urls": "evidence_urls",
+    "first seen at": "first_seen_at",
+    "last seen at": "last_seen_at",
+    "search run id": "search_run_id",
+    "verification confidence": "verification_confidence",
     "link": "discovery_url",
     "posted": "posted_date",
 }
@@ -115,7 +122,11 @@ def parse_batch(path: Path) -> List[Dict[str, object]]:
             raw_key = normalize_text(field_match.group(1))
             field_name = FIELD_MAP.get(raw_key)
             if field_name:
-                current["fields"][field_name] = field_match.group(2).strip()
+                raw_value = field_match.group(2).strip()
+                if field_name == "evidence_urls":
+                    current["fields"][field_name] = [item.strip() for item in raw_value.split(";") if item.strip()]
+                else:
+                    current["fields"][field_name] = raw_value
             continue
 
         note_match = NOTE_RE.match(line)
@@ -143,6 +154,8 @@ def infer_status(note: Optional[str], record: Dict[str, object]) -> str:
     normalized = normalize_text(note)
     if any(token in normalized for token in ["applied", "applied already"]):
         return "applied"
+    if any(token in normalized for token in ["interview", "interview process", "interviewing"]):
+        return "interview"
     if "pending" in normalized:
         return "pending"
     if any(
@@ -270,6 +283,13 @@ def job_record_from_entry(entry: Dict[str, object]) -> Dict[str, object]:
         "user_note": user_note,
         "review_required": review_candidate is not None,
         "review_reason": review_candidate["review_reason"] if review_candidate else None,
+        "source_kind": fields.get("source_kind"),
+        "source_record_id": fields.get("source_record_id"),
+        "evidence_urls": fields.get("evidence_urls") or [],
+        "first_seen_at": fields.get("first_seen_at") or entry["source_date"],
+        "last_seen_at": fields.get("last_seen_at") or entry["source_date"],
+        "search_run_id": fields.get("search_run_id"),
+        "verification_confidence": fields.get("verification_confidence"),
         "notes_history": [],
         "source_file": entry["source_file"],
     }

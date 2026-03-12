@@ -1,20 +1,10 @@
-# Profile Schema
+# Profile Model
 
-Canonical profile model:
+- `career/profile/cv_plain.txt`: canonical candidate narrative, contact info, and reusable evidence
+- `career/profile/imported_resume.txt`: staged extracted text from an external resume
+- `career/profile/profile.yaml`: confirmed preferences and confirmed memory only
+- seed files: `career/profile/cv_plain.example.txt` and `career/profile/profile.example.yaml`
+- generated artifact: `career/profile/render/main.tex`
+- helpers: `scripts/import_resume.py`, `scripts/set_preference.py`, `scripts/render_artifacts.py`
 
-- Candidate facts and reusable evidence: `/workspaces/job/career/profile/cv_plain.txt`
-- Confirmed preferences and memory: `/workspaces/job/career/profile/profile.yaml`
-- Example seed files for a clean clone: `/workspaces/job/career/profile/cv_plain.example.txt` and `/workspaces/job/career/profile/profile.example.yaml`
-
-Read these sources as needed:
-
-- `cv_plain.txt`: contact info, positioning, skills, experience, education, projects, and evidence bank.
-- `preferences.confirmed`: confirmed search and CV preferences.
-- `memory.confirmed`: confirmed long-lived memory by company, domain, and location.
-
-Generated artifacts:
-
-- LaTeX artifact: `/workspaces/job/career/profile/render/main.tex`
-- Confirmed preference writer: `/workspaces/job/.agents/skills/cv-optimize/scripts/set_preference.py`
-
-Never duplicate the full CV narrative into `profile.yaml`; keep candidate facts in `cv_plain.txt` and structured preferences in YAML.
+Never copy the CV narrative into YAML.
