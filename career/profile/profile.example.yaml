@@ -8,6 +8,9 @@ sources:
 
 preferences:
   confirmed:
+    prospecting:
+      contacts:
+        preferred_channels: []
     search:
       remote_policy:
         mode: null
@@ -18,6 +21,8 @@ preferences:
         hireable_from: []
         require_explicit_spain_hiring: null
         allow_eor_or_local_entity: null
+        employer_regions_preferred: []
+        employer_presence_countries_preferred: []
       contract:
         allowed: null
         reject: []

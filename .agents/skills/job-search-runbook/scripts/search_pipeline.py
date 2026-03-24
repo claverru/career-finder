@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import json
-import hashlib
 import re
+import sys
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -14,15 +14,20 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
-import yaml
+COMMON_DIR = Path(__file__).resolve().parents[2] / "common"
+if str(COMMON_DIR) not in sys.path:
+    sys.path.insert(0, str(COMMON_DIR))
+
+import career_shared
 
 
-CAREER_ROOT = Path(__file__).resolve().parents[4] / "career"
-DEFAULT_PROFILE_PATH = CAREER_ROOT / "profile" / "profile.yaml"
-DEFAULT_CV_PATH = CAREER_ROOT / "profile" / "cv_plain.txt"
-DEFAULT_SEARCH_RUNS_PATH = CAREER_ROOT / "search" / "state" / "search_runs.jsonl"
-DEFAULT_DISCOVERY_OUTPUT_PATH = CAREER_ROOT / "search" / "state" / "discovery_candidates.jsonl"
-DEFAULT_RANKED_OUTPUT_PATH = CAREER_ROOT / "search" / "state" / "ranked_candidates.jsonl"
+CAREER_ROOT = career_shared.CAREER_ROOT
+DEFAULT_PROFILE_PATH = career_shared.DEFAULT_PROFILE_PATH
+DEFAULT_CV_PATH = career_shared.DEFAULT_CV_PATH
+career_shared.ensure_state_layout()
+DEFAULT_SEARCH_RUNS_PATH = career_shared.SEARCH_RUNS_PATH
+DEFAULT_DISCOVERY_OUTPUT_PATH = career_shared.SEARCH_DISCOVERY_CANDIDATES_PATH
+DEFAULT_RANKED_OUTPUT_PATH = career_shared.SEARCH_RANKED_CANDIDATES_PATH
 DEFAULT_SOURCE_CATALOG_PATH = CAREER_ROOT / "search" / "policy" / "source_catalog.yaml"
 DEFAULT_SOURCE_PRIORITY = [
     "greenhouse",
@@ -89,16 +94,7 @@ BRIEF_FIELDS = [
         "blocking": False,
     },
 ]
-SECTION_HEADERS = {
-    "HEADLINE",
-    "SUMMARY",
-    "CAREER FOCUS",
-    "SKILLS",
-    "EXPERIENCE",
-    "EDUCATION",
-    "PROJECTS",
-    "EVIDENCE BANK",
-}
+SECTION_HEADERS = career_shared.SECTION_HEADERS
 REMOTE_POSITIVE_PATTERNS = [
     "remote",
     "remote only",
@@ -138,6 +134,11 @@ CONTRACT_PATTERNS = [
     "contractor",
     "freelance",
     "employee",
+]
+EMPLOYMENT_BENEFIT_PATTERNS = [
+    "new hire stock equity",
+    "employee stock purchase plan",
+    "employee resource groups",
 ]
 MODELING_PATTERNS = [
     "design, train",
@@ -211,149 +212,75 @@ class AnchorCollector(HTMLParser):
 
 
 def utc_now() -> str:
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    return career_shared.utc_now()
 
 
 def today_date() -> str:
-    return datetime.now(timezone.utc).date().isoformat()
+    return career_shared.today_date()
 
 
 def normalize_text(value: str) -> str:
-    return re.sub(r"\s+", " ", value).strip().lower()
+    return career_shared.normalize_text(value)
 
 
 def slugify(value: str) -> str:
-    text = normalize_text(value)
-    text = re.sub(r"[^a-z0-9]+", "-", text)
-    return text.strip("-")
+    return career_shared.slugify(value)
 
 
 def stable_json_hash(payload: Any) -> str:
-    rendered = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-    return hashlib.sha256(rendered.encode("utf-8")).hexdigest()
+    return career_shared.stable_json_hash(payload)
 
 
 def read_yaml(path: Path) -> dict[str, Any]:
-    with path.open(encoding="utf-8") as handle:
-        return yaml.safe_load(handle) or {}
+    return career_shared.read_yaml(path)
 
 
 def load_jsonl(path: Path) -> list[dict[str, Any]]:
-    if not path.exists():
-        return []
-    rows: list[dict[str, Any]] = []
-    with path.open(encoding="utf-8") as handle:
-        for line in handle:
-            if line.strip():
-                rows.append(json.loads(line))
-    return rows
+    return career_shared.load_jsonl(path)
 
 
 def append_jsonl(path: Path, row: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True))
-        handle.write("\n")
+    career_shared.append_jsonl(path, row)
 
 
 def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as handle:
-        for row in rows:
-            handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True))
-            handle.write("\n")
+    career_shared.write_jsonl(path, rows)
 
 
 def get_dotted(mapping: dict[str, Any], dotted_path: str) -> Any:
-    current: Any = mapping
-    for segment in dotted_path.split("."):
-        if not isinstance(current, dict) or segment not in current:
-            return None
-        current = current[segment]
-    return current
+    return career_shared.get_dotted(mapping, dotted_path)
 
 
 def is_missing(value: Any) -> bool:
-    if value is None:
-        return True
-    if isinstance(value, str):
-        return not value.strip()
-    if isinstance(value, (list, tuple, dict, set)):
-        return len(value) == 0
-    return False
+    return career_shared.is_missing(value)
 
 
 def split_sections(cv_text: str) -> dict[str, list[str]]:
-    sections: dict[str, list[str]] = {}
-    current: str | None = None
-    for raw_line in cv_text.splitlines():
-        line = raw_line.rstrip()
-        stripped = line.strip()
-        if stripped in SECTION_HEADERS:
-            current = stripped
-            sections[current] = []
-            continue
-        if current is not None:
-            sections[current].append(line)
-    return sections
+    return career_shared.split_sections(cv_text)
 
 
 def parse_focus_roles(section_lines: list[str]) -> list[str]:
-    for line in section_lines:
-        if line.startswith("Target roles:"):
-            return [item.strip() for item in line.removeprefix("Target roles:").split(",") if item.strip()]
-    return []
+    return career_shared.parse_focus_roles(section_lines)
 
 
 def parse_focus_strengths(section_lines: list[str]) -> list[str]:
-    for line in section_lines:
-        if line.startswith("Strengths:"):
-            return [item.strip() for item in line.removeprefix("Strengths:").split(",") if item.strip()]
-    return []
+    return career_shared.parse_focus_strengths(section_lines)
 
 
 def parse_skills(section_lines: list[str]) -> list[str]:
-    skills: list[str] = []
-    for line in section_lines:
-        stripped = line.strip()
-        if ":" not in stripped:
-            continue
-        _, values = stripped.split(":", 1)
-        skills.extend(item.strip() for item in values.split(",") if item.strip())
-    return skills
+    return career_shared.parse_skills(section_lines)
 
 
 def parse_summary_points(section_lines: list[str]) -> list[str]:
-    points: list[str] = []
-    for line in section_lines:
-        stripped = line.strip()
-        if stripped.startswith("- "):
-            points.append(stripped[2:].strip())
-    return points
+    return career_shared.parse_summary_points(section_lines)
 
 
 def unique_preserve_order(values: list[str]) -> list[str]:
-    seen = set()
-    ordered: list[str] = []
-    for value in values:
-        key = normalize_text(value)
-        if not key or key in seen:
-            continue
-        seen.add(key)
-        ordered.append(value)
-    return ordered
+    return career_shared.unique_preserve_order(values)
 
 
 def extract_candidate_context(cv_text: str) -> dict[str, Any]:
-    sections = split_sections(cv_text)
-    focus_lines = [line.strip() for line in sections.get("CAREER FOCUS", []) if line.strip()]
-    return {
-        "headline": next((line.strip() for line in sections.get("HEADLINE", []) if line.strip()), ""),
-        "target_roles": parse_focus_roles(focus_lines),
-        "strengths": parse_focus_strengths(focus_lines),
-        "skills": parse_skills(sections.get("SKILLS", [])),
-        "summary_points": parse_summary_points(sections.get("SUMMARY", [])),
-    }
+    return career_shared.extract_candidate_context(cv_text)
 
 
 def build_search_brief(profile: dict[str, Any]) -> dict[str, Any]:
@@ -951,22 +878,30 @@ def extract_remote_evidence(detail_text: str, location_text: str | None) -> tupl
     positive_quote = first_matching_line(detail_text, REMOTE_POSITIVE_PATTERNS)
     ambiguous_quote = first_matching_line(detail_text, REMOTE_AMBIGUOUS_PATTERNS)
     negative_quote = first_matching_line(detail_text, REMOTE_NEGATIVE_PATTERNS)
+    location_is_remote = looks_country_level_location(location_text)
+    location_remote_quote = f"Location: {location_text}" if location_is_remote and location_text else None
+
+    # Some official pages combine a generic hybrid-culture note with an explicit country-level
+    # remote location. In those cases, the specific location is the stronger hiring signal.
+    if location_remote_quote:
+        return location_remote_quote, "remote"
 
     if ambiguous_quote:
         return ambiguous_quote, "ambiguous"
     if positive_quote and not negative_quote:
         return positive_quote, "remote"
     if positive_quote and negative_quote:
+        if location_remote_quote:
+            return location_remote_quote, "remote"
         return positive_quote, "ambiguous"
     if negative_quote:
         return negative_quote, "hybrid_or_onsite"
 
-    if looks_country_level_location(location_text):
+    if location_is_remote:
         flexible_quote = first_matching_line(detail_text, ["flexible workplace", "workplace flexibility", "flexible working hours"])
         if flexible_quote:
             return f"{flexible_quote} Location: {location_text}", "remote"
-        if location_text and any(token in normalize_text(location_text) for token in ["spain", "remote"]):
-            return f"Location: {location_text}", "remote"
+        return location_remote_quote, "remote"
 
     return None, "unknown"
 
@@ -980,6 +915,18 @@ def extract_geography_evidence(detail_text: str, location_text: str | None) -> s
         return geography_quote
     if location_text:
         return f"Location: {location_text}"
+    return None
+
+
+def extract_contract_evidence(detail_text: str) -> str | None:
+    contract_quote = first_matching_line(detail_text, CONTRACT_PATTERNS)
+    if contract_quote:
+        return contract_quote
+
+    benefit_quote = first_matching_line(detail_text, EMPLOYMENT_BENEFIT_PATTERNS)
+    if benefit_quote:
+        return f"{benefit_quote} (employee benefits signal)"
+
     return None
 
 
@@ -1108,7 +1055,7 @@ def verify_and_rank_candidates(
         detail_text = fetch_candidate_detail_text(candidate)
         remote_quote, remote_state = extract_remote_evidence(detail_text, candidate.get("location_text"))
         geography_quote = extract_geography_evidence(detail_text, candidate.get("location_text"))
-        contract_quote = first_matching_line(detail_text, CONTRACT_PATTERNS)
+        contract_quote = extract_contract_evidence(detail_text)
         modeling_quote = first_matching_line(detail_text, MODELING_PATTERNS)
         deployment_quote = first_matching_line(detail_text, DEPLOYMENT_PATTERNS)
         ops_only_quote = detect_ops_only_signal(candidate.get("role", ""), detail_text)

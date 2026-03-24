@@ -48,7 +48,9 @@ Local files that should stay private and are ignored by `.gitignore`:
 - `career/profile/render/main.pdf`
 - `career/search/policy/source_catalog.yaml`
 - `career/search/batches/[0-9]*.md`
-- `career/search/state/*.jsonl`
+- `career/state/search/*.jsonl`
+- `career/state/search/compact_jobs.md`
+- `career/state/prospecting/*.jsonl`
 - `career/state/*.jsonl`
 
 ## Preference Behavior
@@ -76,4 +78,4 @@ Supported adapters cover Greenhouse, Lever, public Ashby boards, official career
 
 ## Publishing Note
 
-`.gitignore` prevents new local profile and search-state files from being added by default. If you already tracked personal files in a git repository before adding `.gitignore`, remove them from the index before publishing.
+`.gitignore` prevents new local profile and career-state files from being added by default. If you already tracked personal files in a git repository before adding `.gitignore`, remove them from the index before publishing.

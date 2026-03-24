@@ -8,8 +8,9 @@ Load these before search or state updates:
 
 - `career/profile/cv_plain.txt`
 - `career/profile/profile.yaml`
-- `career/search/state/jobs.jsonl`
-- `career/search/state/applications.jsonl`
+- `career/state/search/jobs.jsonl`
+- `career/state/search/applications.jsonl`
+- `career/state/search/runs.jsonl`
 - `career/state/memory_review.jsonl`
 
 ## Decision contract
@@ -17,12 +18,14 @@ Load these before search or state updates:
 - use only confirmed preferences and confirmed memory as hard filters or ranking signals
 - if a needed preference is missing, ask once and persist it
 - keep ambiguous historical notes in review until confirmed
+- if a search run reveals a reusable method improvement, persist it locally before finishing the turn
 
 ## Staged flow
 
 1. Build the mini brief. Block only on missing remote mode, base location, hireable geography, allowed contracts, model-development requirement, or production-ownership requirement.
 2. Derive the query plan from `cv_plain.txt` plus confirmed preferences: role families, positive and negative keywords, location and contract filters, company and domain priority, source priority.
 3. Discover from official or public sources in this order: Greenhouse, Lever, public Ashby boards, official careers pages, LinkedIn public discovery, generic web fallback.
+   Prefer public ATS APIs over brittle board HTML when the source supports them.
 4. Resolve a direct company apply URL. Aggregators and LinkedIn stay discovery-only.
 5. Verify evidence for remote fit, hiring geography, contract type, modeling scope, deployment scope, and salary.
    For remote detection, do not rely only on the word `remote`: treat signals like `flexible workplace`, `work anywhere`, `virtual-Spain`, and country-level locations with workplace flexibility as valid remote evidence unless the posting also introduces hybrid or office requirements.
@@ -31,7 +34,13 @@ Load these before search or state updates:
    If it does not, infer a band from external public sources and store it as `Inferred` with evidence and confidence.
 7. Rank with confirmed preferences and evidence strength.
    Modeling is the hard requirement. Production ownership is a plus unless the confirmed profile explicitly requires it. Reject pure MLOps or platform roles that do not show model-development scope.
-8. Persist readable Markdown batches plus structured updates to `jobs.jsonl`, `applications.jsonl`, `search_runs.jsonl`, and `memory_review.jsonl` when needed.
+8. Persist readable Markdown batches plus structured updates to `jobs.jsonl`, `applications.jsonl`, `runs.jsonl`, and `memory_review.jsonl` when needed.
+9. If you find a repeatable improvement during discovery or verification, update the relevant method file in the same turn.
+   Prefer the smallest durable home for the finding: policy, skill reference, or supporting script.
+10. When a role carries a free-form human note that implies a workflow state, write that state explicitly in the batch as `User status`.
+    The LLM should resolve the note semantically before persistence instead of asking the sync script to infer it from wording.
+11. Treat batches as additive inputs, not the only source of truth.
+    After sync, persistent state must survive even if older batches are deleted, and `career/state/search/compact_jobs.md` should provide the compressed process view.
 
 ## Invariants
 

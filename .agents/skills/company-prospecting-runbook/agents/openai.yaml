@@ -1,0 +1,7 @@
+interface:
+  display_name: "Company Prospecting"
+  short_description: "Find cold-outreach company prospects."
+  default_prompt: "Use $company-prospecting-runbook to find strong company prospects from career/profile/cv_plain.txt, verify public evidence for fit, resolve the best public contact, and update the separate prospecting state."
+
+policy:
+  allow_implicit_invocation: true

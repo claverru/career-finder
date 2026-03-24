@@ -2,15 +2,21 @@
 /career/profile/cv_plain.txt
 /career/profile/imported_resume.txt
 /career/profile/profile.yaml
+/career/profile/render/
 /career/profile/render/main.tex
 /career/profile/render/main.pdf
 /career/search/policy/source_catalog.yaml
+/career/prospecting/policy/source_catalog.yaml
 /career/search/batches/[0-9]*.md
-/career/search/state/*.jsonl
+/career/prospecting/batches/[0-9]*.md
 /career/state/*.jsonl
+/career/state/search/*.jsonl
+/career/state/search/compact_jobs.md
+/career/state/prospecting/*.jsonl
 
 # Local Python state
 __pycache__/
+**/__pycache__/
 *.py[cod]
 .mypy_cache/
 .pytest_cache/

@@ -1,0 +1,24 @@
+sources:
+  - source_kind: leaderboard
+    label: Sifted 250 Europe
+    listing_url: https://sifted.eu/leaderboards/sifted-250-2025
+
+  - source_kind: funding_roundup
+    label: Example funding roundup
+    listing_url: https://example.com/funding-roundup
+
+  - source_kind: company_directory
+    label: Example AI directory
+    listing_url: https://example.com/ai-companies
+
+  - source_kind: company_html
+    company: Example Company
+    company_url: https://example.com
+
+  - source_kind: linkedin_company
+    company: Example Company
+    seed_url: https://www.linkedin.com/company/example-company
+
+  - source_kind: public_people
+    company: Example Company
+    seed_url: https://example.com/team

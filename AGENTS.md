@@ -13,5 +13,6 @@ Global rules:
 - Never invent achievements, dates, technologies, salary expectations, or user preferences.
 - If a missing high-impact preference blocks a decision, ask once and persist the answer.
 - For serious search work, use the staged flow: brief, plan, official/public discovery, verification, ranking, persistence.
+- If serious search or prospecting work reveals a reusable improvement to the method, persist it in the relevant local instructions, reference, or script during the same turn before finishing.
 - Use confirmed memory as a filter or ranking signal; keep ambiguous notes in the review queue.
 - Prefer repo-local skills under `/workspaces/job/.agents/skills/` over ad hoc prompts when the task matches them.

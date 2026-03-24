@@ -1,0 +1,27 @@
+Candidate Marketer
+
+Base: Madrid, Spain
+Email: marketer@example.com
+LinkedIn: https://www.linkedin.com/in/marketer
+
+Canonical narrative profile for candidate facts and reusable evidence.
+Structured preferences and memory live in career/profile/profile.yaml.
+
+HEADLINE
+Growth marketer building repeatable demand systems.
+
+SUMMARY
+- Built lifecycle and demand generation programs for B2B products.
+
+CAREER FOCUS
+Target roles: Growth Marketing Manager, Senior Marketing Manager
+Strengths: growth marketing, demand generation, lifecycle marketing
+
+SKILLS
+marketing: Growth Marketing, Demand Generation, Lifecycle Marketing, Paid Acquisition, CRM
+
+EXPERIENCE
+Example SaaS — Remote / Spain
+Growth Marketing Lead — 2021-01 to Present
+Tags: acquisition, lifecycle
+- Built growth loops and lifecycle programs.

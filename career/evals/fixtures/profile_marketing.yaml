@@ -1,0 +1,28 @@
+preferences:
+  confirmed:
+    search:
+      remote_policy:
+        mode: remote_only
+        notes:
+          - Remote from Spain only.
+        reject:
+          - hybrid_mandatory
+      geography:
+        base: Madrid, Spain
+        hireable_from:
+          - Spain
+        require_explicit_spain_hiring: true
+        allow_eor_or_local_entity: true
+      contract:
+        allowed:
+          - full_time
+        reject:
+          - contractor
+      role_scope:
+        require_model_development: false
+        require_production_ownership: false
+      domains:
+        preferred: []
+      company_preferences:
+        preferred: []
+        blocked_confirmed: []
